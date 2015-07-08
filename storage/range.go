@@ -1021,19 +1021,9 @@ func (r *Range) maybeGossipFirstRange() error {
 // maps include accounting, permissions, and zones. The store is in charge of
 // the initial update, and the range itself re-triggers updates following
 // writes that may have altered any of the maps.
-//
-// Note that maybeGossipConfigs does not check the leader lease; it is called
-// on only when the lease is actually held.
-// TODO(tschottdorf): The main reason this method does not try to get the lease
-// is that InternalLeaderLease calls it, which means that we would wind up
-// deadlocking in redirectOnOrObtainLeaderLease. Can possibly simplify.
 func (r *Range) maybeGossipConfigs(match func(proto.Key) bool) {
 	r.Lock()
 	defer r.Unlock()
-	r.maybeGossipConfigsLocked(match)
-}
-
-func (r *Range) maybeGossipConfigsLocked(match func(configPrefix proto.Key) bool) {
 	if r.rm.Gossip() == nil || !r.isInitialized() {
 		return
 	}

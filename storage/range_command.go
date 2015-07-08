@@ -773,11 +773,6 @@ func (r *Range) InternalLeaderLease(batch engine.Engine, ms *engine.MVCCStats, a
 		r.tsCache.SetLowWater(prevLease.Expiration.Add(int64(r.rm.Clock().MaxOffset()), 0))
 		log.Infof("range %d: new leader lease %s", r.Desc().RaftID, args.Lease)
 	}
-
-	// Gossip configs in the event this range contains config info.
-	r.maybeGossipConfigsLocked(func(configPrefix proto.Key) bool {
-		return r.ContainsKey(configPrefix)
-	})
 }
 
 // AdminSplit divides the range into into two ranges, using either
